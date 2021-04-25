@@ -34,8 +34,8 @@ public:
   
   std::vector<cv::Vec2f> imgpoints(const vector<AprilTags::TagDetection> detections, const int rows, const int columns, const int start_ID);
 
-  std::vector<cv::Vec3f> objpoints(const float size, const float spacing);
-
+  std::vector<cv::Vec3f> objpoints(const vector<AprilTags::TagDetection> detections, const int rows, const int columns, const int start_ID, const float size, const float spacing);
+  
   
 };
 
