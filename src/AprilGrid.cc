@@ -65,9 +65,11 @@ std::vector<cv::Vec2f> AprilGrid::imgpoints(const vector<AprilTags::TagDetection
 }
 
 
-std::vector<cv::Vec3f> AprilGrid::objpoints(const float size, const float spacing) {
-  
-
+std::vector<cv::Vec3f> AprilGrid::objpoints(const vector<AprilTags::TagDetection> detections, const int rows, const int columns, const int start_ID, const float size, const float spacing) {
+  std::vector<cv::Vec3f> newobjectpoints;
+  int p = start_ID;
+  int rows1 = rows;
+  int cols = columns;
   float a;
   float b;
   float sum;
@@ -75,27 +77,29 @@ std::vector<cv::Vec3f> AprilGrid::objpoints(const float size, const float spacin
   b = spacing;
   float c = b*a;
   sum = c + a;
-
-  std::vector<cv::Vec3f> objectpoints;
-  
-  for (int i = 0; i < AprilGrid::rows; i++){
-    for (int j = 0; j < AprilGrid::columns; j++){
-      std::vector<cv::Vec3f > obj;
-      float toprightx = (float)j * sum;
-      float toprighty = (float)i * sum;
-      cv::Vec3f topright = {toprightx, toprighty, 0};
-      cv::Vec3f topleft = {(float)j * sum + a, (float)i * sum, 0};
-      cv::Vec3f bottomleft = {(float)j * sum + a, (float)i * sum + a, 0};
-      cv::Vec3f bottomright = {(float)j * sum, (float)i * sum + a, 0};
-      objectpoints.push_back(topright);
-      objectpoints.push_back(topleft);
-      objectpoints.push_back(bottomleft);
-      objectpoints.push_back(bottomright);
+  int q = p + rows*cols;
+  for (int h = p; h < q; h++){
+    for (size_t i = 0; i < detections.size(); ++i) {
+        const auto& det = detections[i];
+        if (det.id == h){
+            int jdash = h % cols;
+            int idash = (h-jdash)/cols;
+            std::vector<cv::Vec3f > obj;
+            float toprightx = (float)jdash * sum;
+            float toprighty = (float)idash * sum;
+            cv::Vec3f topright = {toprightx, toprighty, 0};
+            cv::Vec3f topleft = {(float)jdash * sum + a, (float)idash * sum, 0};
+            cv::Vec3f bottomleft = {(float)jdash * sum + a, (float)idash * sum + a, 0};
+            cv::Vec3f bottomright = {(float)jdash * sum, (float)idash * sum + a, 0};
+            newobjectpoints.push_back(topright);
+            newobjectpoints.push_back(topleft);
+            newobjectpoints.push_back(bottomleft);
+            newobjectpoints.push_back(bottomright);
+        
     }
+  }    
   }
-
- 
-  return objectpoints;
+  return newobjectpoints;
 }
 
 
